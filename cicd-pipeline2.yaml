@@ -1,0 +1,32 @@
+# Pipeline
+- apiVersion: v1
+  kind: BuildConfig
+  metadata:
+    annotations:
+      pipeline.alpha.openshift.io/uses: '[{"name": "jenkins", "namespace": "", "kind": "DeploymentConfig"}]'
+    labels:
+      app: cicd-pipeline2
+      name: cicd-pipeline2
+    name: tasks-pipeline-prod
+  spec:
+    runPolicy: Serial
+    source:
+      type: None
+    strategy:
+      jenkinsPipelineStrategy:
+        env: {}
+        jenkinsfile: |-
+          pipeline {
+  agent {
+    label 'skopeo'
+  }
+  stages {
+    stage('deployInProduction') {
+      steps {
+        sh "skopeo copy docker://quay.io/cytan/tasks-app:stage docker://quay.io/cytan/tasks-app:prod --src-creds \"cytan:CyRh@645\" --dest-creds \"cytan:CyRh@645\" --src-tls-verify=false --dest-tls-verify=false"
+        openshiftDeploy apiURL: 'https://master.rhpds311.openshift.opentlc.com:443', authToken: '_SnmClnYCp3_Zg8cbdhsjneUIz1s3jVq22cdKpJcIww', depCfg: 'tasks', namespace: 'prod-admin', verbose: 'false', waitTime: '', waitUnit: 'sec'
+      }
+    }
+  }
+}
+      type: JenkinsPipeline
