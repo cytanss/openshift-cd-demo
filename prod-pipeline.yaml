@@ -1,20 +1,11 @@
 kind: "BuildConfig"
 apiVersion: "v1"
 metadata:
-  name: "mlbparks-pipeline"
+  name: "prod-pipeline"
 spec:
   source:
-    git:
-      uri: "https://github.com/tancheeyong/homework.git"
   strategy:
     jenkinsPipelineStrategy:
-      env:
-         - name: GUID
-           value: ${GUID}
-         - name: CLUSTER
-           value: ${CLUSTER}
-         - name: REPO
-           value: ${REPO}
       jenkinsfile: |-
         pipeline {
           agent {
